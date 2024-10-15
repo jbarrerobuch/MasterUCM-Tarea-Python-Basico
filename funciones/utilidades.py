@@ -1,4 +1,5 @@
-from .modo import solitario, dos_jugadores
+from .solitario import solitario
+from .dos_jugadores import dos_jugadores
 import os
 import openpyxl
 import datetime as dt
@@ -35,14 +36,11 @@ def inicializar_juego(primer_juego=True):
             if selección not in range(1, 5):
                 print("Las opciones son del 1 al 4.\n")
 
-    # Selección del modo solitario
     if selección == 1:
 
         # Seleccionar numero intentos máximos
         max_intentos = seleccionar_dificultad()
-
-        # Iniciar el juego en modo solitario
-        resultado, intentos_usados = solitario(max_intentos=max_intentos)
+        resultado, intentos_usados = solitario(max_intentos)
 
         guardar_estadísticas(
             resultado = resultado,
@@ -51,14 +49,9 @@ def inicializar_juego(primer_juego=True):
             max_rango = 1000,
             modo_juego = "Solitario"
         )
-    
-    # Selección del modo 2 jugadores
+
     elif selección == 2:
-
-        # Seleccionar numero intentos máximos
         max_intentos = seleccionar_dificultad()
-
-        # Iniciar el juego en modo 2 jugadores
         resultado, intentos_usados = dos_jugadores(max_intentos=max_intentos)
         
         guardar_estadísticas(
@@ -149,7 +142,6 @@ def guardar_estadísticas(resultado:str, intentos_usados:int, max_intentos:int, 
     # Escribimos los datos al final de los datos existentes y guardamos el archivo.
     pestaña.append([nombre, dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), modo_juego, resultado, intentos_usados, max_intentos, max_rango])
     archivo_excel.save("estadisticas.xlsx")
-
 
 if __name__ == "__main__":
     datos = {
