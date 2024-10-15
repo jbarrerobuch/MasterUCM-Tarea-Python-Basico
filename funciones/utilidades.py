@@ -1,4 +1,5 @@
 from .solitario import solitario
+from .dos_jugadores import dos_jugadores
 import os
 import openpyxl
 import datetime as dt
@@ -51,7 +52,16 @@ def inicializar_juego(primer_juego=True):
 
     elif selección == 2:
         max_intentos = seleccionar_dificultad()
-        print(f"selecionaste {selección}")
+        resultado, intentos_usados = dos_jugadores(max_intentos=max_intentos)
+        
+        guardar_estadísticas(
+            resultado = resultado,
+            intentos_usados = intentos_usados,
+            max_intentos = max_intentos,
+            max_rango = 1000,
+            modo_juego = "Dos jugadores"
+        )
+
     elif selección == 3:
         print(f"selecionaste {selección}")
     elif selección == 4:
