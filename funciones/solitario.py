@@ -1,9 +1,10 @@
 from random import randint
 
-def solitario(intentos:int)->bool:
-    '''Juego en modo solitario. Es denecesario definir el número de intentos.
-    La función devuelve:
-    True si el jugador adivina el número o False si se le acaban los intentos.
+def solitario(intentos:int)->tuple:
+    '''Juego en modo solitario. Es necesario definir el número de intentos.
+    La función devuelve una tupla con:
+    - resultado: "Ganador" si el jugador adivina el número o Perdedor si se le acaban los intentos.
+    - intentos_usados: número de intentos consumidos por el usuario.
     '''
 
     print("Has elegido jugar en modo solitario.")
@@ -43,9 +44,9 @@ def solitario(intentos:int)->bool:
             else:
                 print("Increible, has adivinado el número!!!")
                 print(f"Solo has necesitado {num_intentos} intentos.")
-                return True
+                return ("Ganador", num_intentos)
     
     else:
         print("Oh que pena, te has quedado sin intentos.")
         print(f"has perdido. el número era {objetivo}")
-        return False
+        return ("Perdedor", num_intentos)
