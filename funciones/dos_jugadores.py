@@ -21,7 +21,7 @@ def dos_jugadores(max_intentos:str):
     objetivo = int(input("Jugador 1, por favor introduce un número: "))
 
     # Ronda de intentos de acierto
-    while num_intentos <= max_intentos:
+    while num_intentos < max_intentos:
         # Se muestra el intento actual
         print(f"Te quedan {max_intentos-num_intentos} intentos.")
 
