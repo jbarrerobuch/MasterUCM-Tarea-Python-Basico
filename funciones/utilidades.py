@@ -1,4 +1,5 @@
 from .modo import solitario, dos_jugadores
+from .estadistica import estadisticas
 import os
 import openpyxl
 import datetime as dt
@@ -70,10 +71,11 @@ def inicializar_juego(primer_juego=True):
         )
 
     elif selección == 3:
-        print(f"selecionaste {selección}")
+        estadisticas()
+
     elif selección == 4:
-        print(f"selecionaste {selección}")
-        print("Gracias por jugar")
+        print("¡Gracias por jugar!")
+        print("Adios.")
         exit()
     
 def seleccionar_dificultad()->int:
