@@ -36,4 +36,12 @@ El usuario 1 elegirá un número y el usuario 2 intentará adivinarlo.
   
 ### Estadística  
   
-(WIP)
+El módulo de estadísticas de los datos guardados de cada juego. Consta de dos opciones:
+1. Agrupados por Nombre de jugador.
+2. Agrupados por nivel de difcultad.
+
+Las funciones de agregado son comunes para ambos casos:
+- Conteo de juegos: jugados, ganados y perdidos.
+- Calculos porcentuales de ganados y perdidos sobre el total de juegos.
+- Calculo de promedio de intentos usados.
+- Calculos del promedio de porcentaje de intentos usados sobre el maximo de intentos en cada juego.
