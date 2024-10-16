@@ -79,7 +79,7 @@ def estadisticas ():
             # Renombrados de columna y reordenamiento
             datos_transformados["Promedio intentos"] = datos_transformados["Intentos Usados"]
             datos_transformados = datos_transformados.drop(columns=["Intentos Usados"])
-            datos_transformados.reindex(columns=["Jugados", "Ganados", "Perdidos", "Promedio intentos", "Porcentaje Ganados", "Porcentaje Perdidos", "Porcentaje intentos"])
+            datos_transformados = datos_transformados.reindex(columns=["Jugados", "Ganados", "Perdidos", "Promedio intentos", "Porcentaje Ganados", "Porcentaje Perdidos", "Porcentaje intentos"])
             
             # Impresión de los datos
             print()
