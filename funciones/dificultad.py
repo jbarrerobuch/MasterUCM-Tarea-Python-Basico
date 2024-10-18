@@ -13,7 +13,7 @@ def probabilidades(num_intentos:int, max_rango:int) -> float:
     1 / (max_rango - num_intentos)
     '''
 
-    return 1 / (max_rango - num_intentos)
+    return 1 / (max_rango - (num_intentos - 1))
 
 
 def calculo_rango(probabilidad:float, num_intentos:int) -> int:
@@ -26,9 +26,9 @@ def seleccionar_dificultad():
     y el rango maximo de numeros de acuerdo a la dificultad seleccionada.'''
     dificultad_int = 0
     niveles = {
-        1: [0.5, 0.1, "Fácil"],
-        2: [0.1, 0.02, "Normal"],
-        3: [0.02, 0.004, "Difícil"],
+        1: [0.5, 0.05, "Fácil"],
+        2: [0.05, 0.0002, "Normal"],
+        3: [0.0002, 0.00004, "Difícil"],
         4: [0, 0, "Personalizado"]
     }
 

@@ -1,6 +1,6 @@
 from random import randint
 import getpass
-from .dificultad import probabilidades
+from .puntos import calculo_puntos
 
 def ronda_intentos(max_intentos:int, objetivo:int=None, limite_max_rango:int=1000):
     '''Rondas iterativas de intentos para adivinar el número objetivo.
@@ -49,13 +49,11 @@ def ronda_intentos(max_intentos:int, objetivo:int=None, limite_max_rango:int=100
             else:
                 if intentos_usados == 1:
                     print("Increible, has adivinado el número a la primera!!!")
-                    modificador_de_puntos = 200
                 else:
                     print("Has adivinado el número!!!")
                     print(f"Solo has necesitado {intentos_usados} intentos.")
-                    modificador_de_puntos = 100
 
-                puntos = int(round((1 - probabilidades(num_intentos=intentos_usados, max_rango=limite_max_rango)) * modificador_de_puntos,0))
+                puntos = calculo_puntos(intentos_usados=intentos_usados, max_rango=limite_max_rango)
                 print(f"Has ganado {puntos} puntos.")
                 print("=============================================\n")
                 return ("Ganador", intentos_usados, puntos)
@@ -77,7 +75,8 @@ def solitario(max_intentos:int, limite_max_rango:int=1000):
     print()
     print("=============================================")
     print("Has elegido jugar en modo solitario.")
-    print(f"Te enfrentaras a la maquina que está eligiendo\nun número en estos momentos entre el 1 y el {limite_max_rango}")
+    print(f"Te enfrentaras a la maquina que está eligiendo\n")
+    print(f"un número en estos momentos entre el 1 y el {limite_max_rango}\n")
     
     return ronda_intentos(
         max_intentos=max_intentos,
