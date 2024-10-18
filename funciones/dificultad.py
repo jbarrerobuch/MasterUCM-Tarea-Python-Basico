@@ -26,9 +26,9 @@ def seleccionar_dificultad():
     y el rango maximo de numeros de acuerdo a la dificultad seleccionada.'''
     dificultad_int = 0
     niveles = {
-        1: [0.6, 0.2, "Fácil"],
-        2: [0.2, 0.13, "Normal"],
-        3: [0.13, 0.088, "Difícil"],
+        1: [0.5, 0.1, "Fácil"],
+        2: [0.1, 0.02, "Normal"],
+        3: [0.02, 0.004, "Difícil"],
         4: [0, 0, "Personalizado"]
     }
 
@@ -55,15 +55,15 @@ def seleccionar_dificultad():
         limite_max_rango = None
         dificultad = "Personalizado"
 
-        while max_intentos == None or limite_max_rango == None or max_intentos <= limite_max_rango:
+        while max_intentos == None or limite_max_rango == None or max_intentos >= limite_max_rango:
             try:
                 max_intentos = int(input("Introduce el número de intentos: "))
                 limite_max_rango = int(input("Introduce el rango máximo de números enteros: "))
             except ValueError:
                 print("Por favor, introduce un número válido.\n")
             else:
-                if max_intentos <= limite_max_rango:
-                    print("El número de intentos debe ser mayor que el rango de números enteros.\n")
+                if max_intentos >= limite_max_rango:
+                    print("El número de intentos debe ser menor que el rango de números enteros.\n")
 
     else:
         max_prob, min_prob, dificultad = niveles[dificultad_int]

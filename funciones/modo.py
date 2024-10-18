@@ -102,13 +102,15 @@ def dos_jugadores(max_intentos:str, limite_max_rango:int=1000):
     print(f"El jugador 2 tiene {max_intentos} intentos para adivinar el número.")
 
     # Jugador 1 elige el número objetivo
-    try:
-        objetivo = int(input(f"Jugador 1, por favor introduce un número entre 1 y {limite_max_rango}: "))
-    except ValueError:
-        print("Por favor, introduce un número válido.\n")
-    else:
-        if objetivo not in range(1, limite_max_rango+1):
-            print(f"El número debe estár entre 1 y {limite_max_rango}.\n")
+    objetivo = 0
+    while objetivo not in range(1, limite_max_rango+1):
+        try:
+            objetivo = int(input(f"Jugador 1, por favor introduce un número entre 1 y {limite_max_rango}: "))
+        except ValueError:
+            print("Por favor, introduce un número válido.\n")
+        else:
+            if objetivo not in range(1, limite_max_rango+1):
+                print(f"El número debe estár entre 1 y {limite_max_rango}.\n")
     
     return ronda_intentos(
         max_intentos=max_intentos,
