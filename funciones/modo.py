@@ -1,4 +1,5 @@
 from random import randint
+import getpass
 from .dificultad import probabilidades
 
 def ronda_intentos(max_intentos:int, objetivo:int=None, limite_max_rango:int=1000):
@@ -105,7 +106,7 @@ def dos_jugadores(max_intentos:str, limite_max_rango:int=1000):
     objetivo = 0
     while objetivo not in range(1, limite_max_rango+1):
         try:
-            objetivo = int(input(f"Jugador 1, por favor introduce un número entre 1 y {limite_max_rango}: "))
+            objetivo = int(getpass.getpass(f"Jugador 1, por favor introduce un número entre 1 y {limite_max_rango}\n (Tu número está oculto, despues de escribirlo presiona enter): "))
         except ValueError:
             print("Por favor, introduce un número válido.\n")
         else:
