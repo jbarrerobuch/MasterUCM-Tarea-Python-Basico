@@ -43,9 +43,9 @@ def ronda_intentos(max_intentos:int, objetivo:int=None, limite_max_rango:int=100
         # Comprobamos el resultado
         else:
             if número_del_jugador < objetivo:
-                print("Tu número es menor.\n")
+                print("El número secreto es mayor.\n")
             elif número_del_jugador > objetivo:
-                print("Tu numero es mayor.\n")
+                print("El número secreto es menor.\n")
             else:
                 if intentos_usados == 1:
                     print("Increible, has adivinado el número a la primera!!!")

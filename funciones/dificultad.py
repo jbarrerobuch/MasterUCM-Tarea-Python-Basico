@@ -39,16 +39,16 @@ def seleccionar_dificultad():
         print("1. Fácil")
         print("2. Normal")
         print("3. Difícil")
-        print("4. Personalizado - té decides número de intentos y el rango")
-        print("Los puntos para el rankin estadístico se calcula en base a la probablidad de frascaso en cada intento.")
+        print("4. Personalizado - té decides número de intentos y el rango\n")
+        print("Segun la dificultad y el numero de aciertos usados se calularan los puntos para el ranking\n")
 
         try:
             dificultad_int = int(input("Introduce el número de la dificultad: "))
         except ValueError:
-            print("Por favor, introduce un número válido.\n")
+            print("\nPor favor, introduce un número válido.\n")
         else:
             if dificultad_int not in niveles.keys():
-                print(f"Las opciones son del 1 al {len(niveles)}.\n")
+                print(f"\nLas opciones son del 1 al {len(niveles)}.\n")
     
     if dificultad_int == 4:
         max_intentos = None

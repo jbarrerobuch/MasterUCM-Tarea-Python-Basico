@@ -2,6 +2,7 @@ from .modo import solitario, dos_jugadores
 from .estadistica import estadisticas
 from .dificultad import seleccionar_dificultad
 import os
+import sys
 import openpyxl
 import datetime as dt
 
@@ -28,7 +29,7 @@ def inicializar_juego(primer_juego=True):
         print("1. Partida modo solitario")
         print("2. Partida 2 Jugadores")
         print("3. Estadística")
-        print("4. Salir")
+        print("4. Salir\n")
         try:
             selección = int(input())
         except ValueError:
@@ -39,6 +40,8 @@ def inicializar_juego(primer_juego=True):
 
     # Selección del modo solitario
     if selección == 1:
+
+        print("Has elegido jugar en modo solitario.\n")
 
         # Seleccionar numero intentos máximos
         max_intentos, max_rango, dificultad = seleccionar_dificultad()
@@ -81,7 +84,7 @@ def inicializar_juego(primer_juego=True):
     elif selección == 4:
         print("¡Gracias por jugar!")
         print("Adios.")
-        exit()
+        sys.exit()
 
 def guardar_estadísticas(resultado:str, intentos_usados:int, max_intentos:int, max_rango:int, puntos:int, dificultad:str, modo_juego:str):
     '''Guarda las estadisticas de juego en un archivo Excel.

@@ -31,7 +31,7 @@ def estadisticas ():
             datos["Ganados"] = datos["Resultado"].apply(lambda x: 1 if x == "Ganador" else 0)
             datos["Perdidos"] = datos["Resultado"].apply(lambda x: 1 if x == "Perdedor" else 0)
             datos["Jugados"] = 1
-            datos["Porcentaje intentos"] = round(datos["Intentos Usados"] / datos["Max Intentos"] * 100,0)
+            datos["Porcentaje intentos"] = datos["Intentos Usados"] / datos["Max Intentos"] * 100
 
         if selección == 3: # Salir
             print()
@@ -40,7 +40,7 @@ def estadisticas ():
         else:
             if selección == 1: # Estadísticas generales por Jugador
 
-                datos_transformados = datos
+                datos_transformados = datos.copy()
                 # Eliminar columns innecesarias
                 datos_transformados = datos_transformados.drop(columns=["Timestamp", "Resultado", "Modo de Juego", "Max Intentos", "Max Rango", "Dificultad"])
                 
@@ -50,17 +50,18 @@ def estadisticas ():
                         "Jugados": "sum",
                         "Ganados": "sum",
                         "Perdidos": "sum",
-                        "Intentos Usados": "mean",
-                        "Porcentaje intentos": "mean",
+                        "Intentos Usados": promedio_redondeado,
+                        "Porcentaje intentos": lambda x: promedio_redondeado(x, decimales=1),
                         "Puntos": "sum"
                     }
                 )
 
             elif selección == 2: # Estadísticas por dificultad
 
-                datos_transformados = datos
+                datos_transformados = datos.copy()
                 # Eliminar columns innecesarias
-                datos_transformados = datos_transformados.drop(columns=["Timestamp", "Resultado", "Nombre"])
+                datos_transformados["Promedio Puntos"] = datos_transformados["Puntos"]
+                datos_transformados = datos_transformados.drop(columns=["Timestamp", "Resultado", "Nombre", "Puntos"])
 
                 # Agrupar los datos por Nombre de jugador con diferentes agregados para cada dato.
                 datos_transformados = datos_transformados.groupby(["Dificultad"], as_index=True).agg(
@@ -68,24 +69,36 @@ def estadisticas ():
                         "Jugados": "sum",
                         "Ganados": "sum",
                         "Perdidos": "sum",
-                        "Intentos Usados": "mean",
-                        "Porcentaje intentos": "mean",
-                        "Puntos": "sum"
+                        "Intentos Usados": promedio_redondeado,
+                        "Porcentaje intentos": lambda x: promedio_redondeado(x, decimales=1),
+                        "Promedio Puntos": promedio_redondeado
                     }
                 )
 
             # Calculo de otros datos porcentuales
-            datos_transformados["Porcentaje Ganados"] = datos_transformados["Ganados"] / datos_transformados["Jugados"] * 100
-            datos_transformados["Porcentaje Perdidos"] = datos_transformados["Perdidos"] / datos_transformados["Jugados"] * 100
+            datos_transformados["Porcentaje Ganados"] = round(datos_transformados["Ganados"] / datos_transformados["Jugados"] * 100,1)
+            datos_transformados["Porcentaje Perdidos"] = round(datos_transformados["Perdidos"] / datos_transformados["Jugados"] * 100,1)
 
             # Renombrados de columna y reordenamiento
             datos_transformados["Promedio intentos"] = datos_transformados["Intentos Usados"]
             datos_transformados = datos_transformados.drop(columns=["Intentos Usados"])
-            datos_transformados =datos_transformados.reindex(columns=["Jugados", "Ganados", "Perdidos", "Puntos", "Promedio intentos", "Porcentaje Ganados", "Porcentaje Perdidos", "Porcentaje intentos"])
-            #datos_transformados = datos_transformados.sort_values(by="Puntos", ascending=False)
+
+            if selección == 1:
+                datos_transformados =datos_transformados.reindex(columns=["Jugados", "Ganados", "Perdidos", "Puntos", "Promedio intentos", "Porcentaje Ganados", "Porcentaje Perdidos", "Porcentaje intentos"])
+                datos_transformados = datos_transformados.sort_values(by="Puntos", ascending=False)
+
+            elif selección == 2:
+                datos_transformados =datos_transformados.reindex(columns=["Jugados", "Ganados", "Perdidos", "Promedio Puntos", "Promedio intentos", "Porcentaje Ganados", "Porcentaje Perdidos", "Porcentaje intentos"])
+            
             # Impresión de los datos
             print()
             print(datos_transformados)
+            print()
+
+def promedio_redondeado(series, decimales=0):
+    return int(series.mean().round(decimales))
+
+
 
 
 if __name__ == "__main__":
