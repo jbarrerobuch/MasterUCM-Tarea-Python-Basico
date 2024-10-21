@@ -1,5 +1,7 @@
 from random import randint
 
+__all__ = ["probabilidades", "calculo_rango", "seleccionar_dificultad"]
+
 def probabilidades(num_intentos:int, max_rango:int) -> float:
     '''Calcula la probabilidad de adivinar un número en un rango determinado  
     de numeros enteros. Tras cada intento se reduce en numero de opciones  
@@ -39,11 +41,12 @@ def seleccionar_dificultad():
         print("1. Fácil")
         print("2. Normal")
         print("3. Difícil")
-        print("4. Personalizado - té decides número de intentos y el rango\n")
+        print("4. Personalizado - tú decides número de intentos y el rango\n")
         print("Segun la dificultad y el numero de aciertos usados se calularan los puntos para el ranking\n")
 
+        print("Introduce el nivel de dificultad: ")
         try:
-            dificultad_int = int(input("Introduce el número de la dificultad: "))
+            dificultad_int = int(input())
         except ValueError:
             print("\nPor favor, introduce un número válido.\n")
         else:

@@ -14,7 +14,7 @@ def inicializar_juego(primer_juego=True):
         print("Instrucciones:")
         print("El juego consiste en adivinar un número ENTERO entre 1 y 1000")
         print("Después de cada intento, se te dará una pista: si el número a adivinar es mayor o menor a tu intento")
-        print("Acontinuación, podrás elegir el modod de juego y la dificultad.")
+        print("A continuación, podrás elegir el modo de juego y la dificultad.")
         print("¡Buena suerte!")
     else:
         print()
@@ -30,13 +30,15 @@ def inicializar_juego(primer_juego=True):
         print("2. Partida 2 Jugadores")
         print("3. Estadística")
         print("4. Salir\n")
+        print("¿Qué deseas hacer?: ", flush=True)
+        selección = input()
         try:
-            selección = int(input())
+            selección = int(selección)
         except ValueError:
-            print("Por favor, introduce un número válido.\n")
+            print("Por favor, introduce un número válido.\n", flush=True)
         else:
             if selección not in range(1, 5):
-                print("Las opciones son del 1 al 4.\n")
+                print("Las opciones son del 1 al 4.\n", flush=True)
 
     # Selección del modo solitario
     if selección == 1:
@@ -96,7 +98,8 @@ def guardar_estadísticas(resultado:str, intentos_usados:int, max_intentos:int, 
 
     Los datos se almacenarán junto con el nombre del jugador adivinador, la fecha y hora de la partida.
     '''
-    nombre = input("Por favor Introduce tu nombre para almacenar las estadísticas de juego:\n")
+    print("Por favor Introduce tu nombre para almacenar las estadísticas de juego: ")
+    nombre = input()
     
     
     # Nombre de las columnas a guardar

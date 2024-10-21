@@ -1,4 +1,3 @@
-import funciones
 import funciones.utilidades
 
 # Inicializar el juego
