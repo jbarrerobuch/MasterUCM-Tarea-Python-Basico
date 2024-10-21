@@ -1,7 +1,7 @@
 import subprocess
 from random import randint
 import time
-from .agente import algoritmos
+from agente import algoritmos
 
 class Agente():
 
@@ -67,8 +67,8 @@ class Agente():
                         self.limite_max_rango = int(output.strip().split(" ")[-1])
                         
                         # Inicialización de los algoritmos
-                        if self.nombre == "mitades":
-                            self.algoritmo = algoritmos.mitades(limite_max_rango=1000)
+                        if self.nombre == "Mitades":
+                            self.algoritmo = algoritmos.mitades(limite_max_rango=self.limite_max_rango)
                     
                     # Intento de acierto
                     elif output == "Introduce un número: \n":
@@ -79,7 +79,7 @@ class Agente():
                         if self.nombre == "Aleatorio":
                             numero = randint(1, self.limite_max_rango)
                         elif self.nombre == "Mitades":
-                            self.algoritmo.seleccionar_numero()
+                            numero = self.algoritmo.seleccionar_numero()
                         elif self.nombre == "Gemini":
                             pass
 
@@ -113,5 +113,9 @@ class Agente():
                     
 
 if __name__ == "__main__":
-    agente = Agente(nombre="mitades", max_juegos=1)
+    agente = Agente(
+        nombre="Mitades",
+        dificultad= 1,
+        max_juegos=1
+        )
     agente.iniciar_juego()
