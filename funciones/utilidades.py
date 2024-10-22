@@ -99,8 +99,11 @@ def guardar_estadísticas(resultado:str, intentos_usados:int, max_intentos:int, 
     Los datos se almacenarán junto con el nombre del jugador adivinador, la fecha y hora de la partida.
     '''
     print("Por favor Introduce tu nombre para almacenar las estadísticas de juego: ")
-    nombre = input()
-    
+    try:
+        nombre = input()
+    except Exception as e:
+        print("Error al introducir el nombre. Se guardará como 'Desconocido'")
+        nombre = "Desconocido"    
     
     # Nombre de las columnas a guardar
     columnas = ["Nombre", "Timestamp", "Modo de Juego", "Resultado", "Intentos Usados", "Max Intentos", "Max Rango", "Puntos", "Dificultad"]
