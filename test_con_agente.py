@@ -47,35 +47,35 @@ class Agente():
 
             if output:
 
-                # Print output
+                # Impresión de la salida del subproceso
                 print(f"[subprocess] {output.strip()}")
 
                 # Selección de modo de juego
                 if output == "¿Qué deseas hacer?: \n":
 
-                    # Seleccionar modo solitario
+                    # Salir Si se han alcanzado el maximo de juegos programados
                     if self.total_juegos >= self.max_juegos:
                         print("[Main] 4")
                         func.stdin.write("4\n")
                         func.stdin.flush()
                         break
-
+                    
+                    # Seleccionar modo solitario
                     print("[Main] 1")
                     func.stdin.write("1\n")
                     func.stdin.flush()
-                    ultima_seleccion = True
                 
                 # Selección de dificultad
                 elif output == "Introduce el nivel de dificultad: \n":
-                    # Seleccionar dificultad Fácil
-                    print("[Main] 1")
-                    func.stdin.write("1\n")
+
+                    print(f"[Main] {self.dificultad}")
+                    func.stdin.write(f"{self.dificultad}\n")
                     func.stdin.flush()
-                    #ultima_seleccion = "dificultad"
                 
                 # Captura del limite maximo del rango
                 elif output.startswith("un número en estos momentos entre el 1 y el"):
-
+                    
+                    # Extracción de numero del mensage de salida.
                     self.limite_max_rango = int(output.strip().split(" ")[-1])
                     
                     # Inicialización de los algoritmos
@@ -83,6 +83,8 @@ class Agente():
                         self.algoritmo = algoritmos.mitades(limite_max_rango=self.limite_max_rango)
                     
                     elif self.nombre == "Gemini":
+
+                        # Si no se define modelo, uso del modelo por defecto
                         if self.modelo is None:
                             self.algoritmo = algoritmos.gemini(limite_max_rango=self.limite_max_rango)
                         else:
@@ -98,11 +100,14 @@ class Agente():
                         numero = randint(1, self.limite_max_rango)
 
                     elif self.nombre == "Mitades" or self.nombre == "Gemini":
-                        numero = int(self.algoritmo.seleccionar_numero().strip())
+                        numero = self.algoritmo.seleccionar_numero()
 
                     # Almacenar número
-                    self.ultimo_numero = numero
-                    print(f"[Main] {numero}")
+                    if numero == "":
+                        print("Respuesta del LLM vacia. Reintentar.")
+                    else:
+                        self.ultimo_numero = numero
+                        print(f"[Main] {numero}")
 
                     # Enviar al subproceso
                     func.stdin.write(f"{numero}\n")
@@ -121,6 +126,7 @@ class Agente():
                 
                 # Nombre para Estadísticas
                 elif output == "Por favor Introduce tu nombre para almacenar las estadísticas de juego: \n":
+
                     # Introducir nombre
                     if self.nombre == "Gemini":
                         func.stdin.write(f"{self.modelo}\n")
@@ -141,10 +147,35 @@ class Agente():
                     
 
 if __name__ == "__main__":
-    agente = Agente(
-        nombre="Gemini",
-        modelo="gemini-1.5-flash",
-        dificultad= 1,
-        max_juegos=15
-        )
-    agente.iniciar_juego()
+    configs = {
+        #"Aleatorio": {
+        #    "nombre": "Aleatorio",
+        #    "dificultad": 1,
+        #    "max_juegos": 1000
+        #},
+        #"Mitades": {
+        #    "nombre": "Mitades",
+        #    "dificultad": 1,
+        #    "max_juegos": 479
+        #},
+        "Gemini": {
+            "nombre": "Gemini",
+            "modelo": "gemini-1.5-flash",
+            "dificultad":  1,
+            "max_juegos": 1000
+        }
+    }
+    niveles_dificultad = [2]
+
+    for config in configs.values():
+        for nivel in niveles_dificultad:
+            agente = Agente(
+                nombre=config["nombre"],
+                dificultad=nivel,
+                modelo=config["modelo"] if "modelo" in config.keys() else None,
+                max_juegos=config["max_juegos"]
+            )
+            print("=====================================================")
+            print(f"Agente: {agente.nombre} - Dificultad: {agente.dificultad}")
+            print("=====================================================")
+            agente.iniciar_juego()

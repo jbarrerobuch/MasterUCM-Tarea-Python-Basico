@@ -5,6 +5,7 @@ import os
 import sys
 import openpyxl
 import datetime as dt
+import time
 
 def inicializar_juego(primer_juego=True):
 
@@ -30,15 +31,15 @@ def inicializar_juego(primer_juego=True):
         print("2. Partida 2 Jugadores")
         print("3. Estadística")
         print("4. Salir\n")
-        print("¿Qué deseas hacer?: ", flush=True)
+        print("¿Qué deseas hacer?: ")
         selección = input()
         try:
             selección = int(selección)
         except ValueError:
-            print("Por favor, introduce un número válido.\n", flush=True)
+            print("Por favor, introduce un número válido.\n")
         else:
             if selección not in range(1, 5):
-                print("Las opciones son del 1 al 4.\n", flush=True)
+                print("Las opciones son del 1 al 4.\n")
 
     # Selección del modo solitario
     if selección == 1:
@@ -112,7 +113,11 @@ def guardar_estadísticas(resultado:str, intentos_usados:int, max_intentos:int, 
     if os.path.exists("estadisticas.xlsx"):
 
         # si existe, cargamos el archivo.
-        archivo_excel = openpyxl.load_workbook("estadisticas.xlsx")
+        try:
+            archivo_excel = openpyxl.load_workbook("estadisticas.xlsx")
+        except PermissionError:
+            time.sleep(5)
+            archivo_excel = openpyxl.load_workbook("estadisticas.xlsx")
 
         # Comprobamos si el archivo contiene una pestaña llamada estadísticas
         if not "estadísticas" in archivo_excel.sheetnames:
@@ -143,8 +148,13 @@ def guardar_estadísticas(resultado:str, intentos_usados:int, max_intentos:int, 
 
     # Escribimos los datos al final de los datos existentes y guardamos el archivo.
     pestaña.append([nombre, dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), modo_juego, resultado, intentos_usados, max_intentos, max_rango, puntos, dificultad])
-    archivo_excel.save("estadisticas.xlsx")
+    try:
+        archivo_excel.save("estadisticas.xlsx")
+    except PermissionError:
+        time.sleep(5)
+        archivo_excel.save("estadisticas.xlsx")
 
+    print("Estadísticas guardadas con éxito.\n")
 
 if __name__ == "__main__":
     datos = {

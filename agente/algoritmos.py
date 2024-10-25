@@ -45,7 +45,8 @@ class gemini():
         self.llm = ChatGoogleGenerativeAI(
             model=self.model,
             api_key=os.environ["GOOGGLE_API_KEY"],
-            temperature=0
+            temperature=0,
+            verbose=True
             )
             
     def agregar_respuesta(self, respuesta:tuple):
@@ -85,12 +86,23 @@ class gemini():
         if not self.usage_metadata["timer"] is None:
 
             # Comprabar uso de la API y esperar si es necesartio
-            while self.usage_metadata["requests_min"] >= 11 and (dt.now() - self.usage_metadata["timer"]).seconds < 60:
+            if self.usage_metadata["requests_min"] >= 11 and (dt.now() - self.usage_metadata["timer"]).seconds <= 60:
                 pause = 60 - (dt.now() - self.usage_metadata["timer"]).seconds
                 print(f"Se ha excedido el límite de uso de la API, esperando {pause} segundos para reintentar")
                 pprint.pprint(self.usage_metadata)
                 time.sleep(pause)
-        
+                for key in self.usage_metadata.keys():
+                    if key != "timer":
+                        self.usage_metadata[key] = 0
+                    else:
+                        self.usage_metadata[key] = dt.now()
+
+                print("Reiniciando uso de la API")
+                pprint.pprint(self.usage_metadata)
+            elif (dt.now() - self.usage_metadata["timer"]).seconds > 60 and (self.usage_metadata["requests_min"] < 11):
+                print("Reiniciando uso de la API")
+                self.usage_metadata["timer"] = dt.now()
+                self.usage_metadata["requests_min"] = 0
 
         try:
             respuesta = self.llm.invoke(mensaje)
@@ -110,7 +122,16 @@ class gemini():
         usage = respuesta.usage_metadata
         for key, value in usage.items():
             self.usage_metadata[key] += value
-        return respuesta.content
+        
+        # Procesar respuesta en caso de que no entregue un número.
+        try:
+            respuesta = int(respuesta.content.strip())
+        except ValueError:
+            respuesta = respuesta.content.split(" ")[-1]
+            if respuesta[-1] == ".":
+                respuesta = respuesta[:-1]
+
+        return respuesta
 
 if __name__ == "__main__":
     agente = gemini()
