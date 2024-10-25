@@ -52,4 +52,5 @@ Desarrollado un agente que dispone de 3 algoritmos de juego.
 - Aleatorio: acierta con escogiendo un número aleatorio dentro del rango de juego definiodo.
 - Mitades: acierta con el numero central del rango descartando la mitad del rango segun la respuesta de salida del programa.
 - Gemini: uso de la API de google para interactuar con el LLM Gemini, modelo: gemini-1.5-flash. Es necesario definir al variabe de entorno  
-  desde el archivo env.yml dentro de la carpeta agente.
+  desde el archivo env.yml dentro de la carpeta agente.  
+  El uso del agente LLM necesita del modulo Langchain.
