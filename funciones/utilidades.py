@@ -5,6 +5,7 @@ import os
 import sys
 import openpyxl
 import datetime as dt
+import time
 
 def inicializar_juego(primer_juego=True):
 
@@ -14,7 +15,7 @@ def inicializar_juego(primer_juego=True):
         print("Instrucciones:")
         print("El juego consiste en adivinar un número ENTERO entre 1 y 1000")
         print("Después de cada intento, se te dará una pista: si el número a adivinar es mayor o menor a tu intento")
-        print("Acontinuación, podrás elegir el modod de juego y la dificultad.")
+        print("A continuación, podrás elegir el modo de juego y la dificultad.")
         print("¡Buena suerte!")
     else:
         print()
@@ -30,8 +31,10 @@ def inicializar_juego(primer_juego=True):
         print("2. Partida 2 Jugadores")
         print("3. Estadística")
         print("4. Salir\n")
+        print("¿Qué deseas hacer?: ")
+        selección = input()
         try:
-            selección = int(input())
+            selección = int(selección)
         except ValueError:
             print("Por favor, introduce un número válido.\n")
         else:
@@ -96,8 +99,12 @@ def guardar_estadísticas(resultado:str, intentos_usados:int, max_intentos:int, 
 
     Los datos se almacenarán junto con el nombre del jugador adivinador, la fecha y hora de la partida.
     '''
-    nombre = input("Por favor Introduce tu nombre para almacenar las estadísticas de juego:\n")
-    
+    print("Por favor Introduce tu nombre para almacenar las estadísticas de juego: ")
+    try:
+        nombre = input()
+    except Exception as e:
+        print("Error al introducir el nombre. Se guardará como 'Desconocido'")
+        nombre = "Desconocido"    
     
     # Nombre de las columnas a guardar
     columnas = ["Nombre", "Timestamp", "Modo de Juego", "Resultado", "Intentos Usados", "Max Intentos", "Max Rango", "Puntos", "Dificultad"]
@@ -106,7 +113,11 @@ def guardar_estadísticas(resultado:str, intentos_usados:int, max_intentos:int, 
     if os.path.exists("estadisticas.xlsx"):
 
         # si existe, cargamos el archivo.
-        archivo_excel = openpyxl.load_workbook("estadisticas.xlsx")
+        try:
+            archivo_excel = openpyxl.load_workbook("estadisticas.xlsx")
+        except PermissionError:
+            time.sleep(5)
+            archivo_excel = openpyxl.load_workbook("estadisticas.xlsx")
 
         # Comprobamos si el archivo contiene una pestaña llamada estadísticas
         if not "estadísticas" in archivo_excel.sheetnames:
@@ -137,8 +148,13 @@ def guardar_estadísticas(resultado:str, intentos_usados:int, max_intentos:int, 
 
     # Escribimos los datos al final de los datos existentes y guardamos el archivo.
     pestaña.append([nombre, dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), modo_juego, resultado, intentos_usados, max_intentos, max_rango, puntos, dificultad])
-    archivo_excel.save("estadisticas.xlsx")
+    try:
+        archivo_excel.save("estadisticas.xlsx")
+    except PermissionError:
+        time.sleep(5)
+        archivo_excel.save("estadisticas.xlsx")
 
+    print("Estadísticas guardadas con éxito.\n")
 
 if __name__ == "__main__":
     datos = {

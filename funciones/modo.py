@@ -32,8 +32,9 @@ def ronda_intentos(max_intentos:int, objetivo:int=None, limite_max_rango:int=100
 
         # El jugardor introduce un número valido
         while número_del_jugador not in range(1, limite_max_rango+1):
+            print("Introduce un número: ")
             try:
-                número_del_jugador = int(input("Introduce un número: "))
+                número_del_jugador = int(input())
             except ValueError:
                 print(f"Por favor, sólo números ENTEROS válidos entre el 1 y {limite_max_rango}.\n")
             else:
@@ -75,7 +76,7 @@ def solitario(max_intentos:int, limite_max_rango:int=1000):
     print()
     print("=============================================")
     print("Has elegido jugar en modo solitario.")
-    print(f"Te enfrentaras a la maquina que está eligiendo\n")
+    print("Te enfrentaras a la maquina que está eligiendo")
     print(f"un número en estos momentos entre el 1 y el {limite_max_rango}\n")
     
     return ronda_intentos(

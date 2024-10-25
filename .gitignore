@@ -1,4 +1,6 @@
 /Tarea programación python básico.pdf
-estadisticas.xlsx
+Test-estadisticas.xlsx
 __pycache__/
 .vscode/
+.ipynb_checkpoints/
+env.yml
