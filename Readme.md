@@ -53,3 +53,6 @@ Desarrollado un agente que dispone de 3 algoritmos de juego.
 - Mitades: acierta con el numero central del rango descartando la mitad del rango segun la respuesta de salida del programa.
 - Gemini: uso de la API de Google para interactuar con el LLM Gemini, modelo: gemini-1.5-flash. Es necesario definir la API KEY de Google desde el archivo “env.yml” dentro de la carpeta agente con el nombre “GOOGLE_API_KEY”. El uso del agente LLM necesita del módulo Langchain.
  
+## Github
+  
+Todo el desarrollo ha sido documentado en Github: https://github.com/jbarrerobuch/Tarea-Python-Basico
