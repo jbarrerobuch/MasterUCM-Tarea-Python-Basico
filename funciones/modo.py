@@ -1,6 +1,64 @@
 from random import randint
 import getpass
 from .puntos import calculo_puntos
+from . import utilidades
+
+__all__ = ["ronda_intentos", "solitario", "dos_jugadores"]
+
+
+def solitario(max_intentos:int, limite_max_rango:int=1000):
+    '''Juego en modo solitario. Es necesario definir el número de intentos y el máximo del rango del
+    número secreto. Valor por defecto 1000.
+    La función devuelve una tupla con:
+    - resultado: "Ganador" si el jugador adivina el número o "Perdedor" si se le acaban los intentos.
+    - intentos_usados: número de intentos consumidos por el usuario.
+    '''
+    print()
+    print("=============================================")
+    print("Has elegido jugar en modo solitario.")
+    print("Te enfrentaras a la maquina. Está eligiendo")
+    print(f"un número, en estos momentos, entre el 1 y el {limite_max_rango}\n")
+    
+    return ronda_intentos(
+        max_intentos=max_intentos,
+        limite_max_rango=limite_max_rango
+        )
+
+
+def dos_jugadores(max_intentos:str, limite_max_rango:int=1000):
+    '''Juego en modo 2 jugadores. Se requerirá al jugador 1 elegir un número dentro
+      de un rango entre 1 y un máximo variable, por defecto 1000. A continuación el
+      jugador 2 deberá intentar adivinarlo.
+      Requerido el número de intentos.
+      La función devuelve una tupla con:
+      - resultado: "Ganador" si el jugador 2 adivina el número o "Perdedor" si se le acaban los intentos.
+      - intentos_usados: número de intentos consumidos por el usuario.
+      '''
+    
+    # Inicialización del juego
+    print()
+    print("=============================================")
+    print("Has elegido el modo 2 jugadores.")
+    print(f"El jugador 1 deberá elegir un numero entre el 1 y el {limite_max_rango}.")
+    print(f"El jugador 2 tiene {max_intentos} intentos para adivinar el número.")
+
+    # Jugador 1 elige el número objetivo
+    objetivo = 0
+    while objetivo not in range(1, limite_max_rango+1):
+        objetivo = utilidades.validar_selección(
+            getpass.getpass(
+                f"Jugador 1, por favor introduce un número entre 1 y {limite_max_rango}\n\
+                (Tu número está oculto, despues de escribirlo presiona enter): "
+            ),
+            opción_max=limite_max_rango
+        )
+
+    return ronda_intentos(
+        max_intentos=max_intentos,
+        objetivo=objetivo,
+        limite_max_rango=limite_max_rango
+        )
+
 
 def ronda_intentos(max_intentos:int, objetivo:int=None, limite_max_rango:int=1000):
     '''Rondas iterativas de intentos para adivinar el número objetivo.
@@ -8,7 +66,7 @@ def ronda_intentos(max_intentos:int, objetivo:int=None, limite_max_rango:int=100
     máximo definido. Valor por defect 1000.
     Requerido el número maximo de intentos para evaluar el resultado del juego.
     La función devuelve una tupla con:
-    - resultado: "Ganador" si el jugador adivina el número o Perdedor si se le acaban los intentos.
+    - resultado: "Ganador" si el jugador adivina el número o "Perdedor" si se le acaban los intentos.
     - intentos_usados: número de intentos consumidos por el usuario.'''
 
     # Si no se define un número objetivo se genera aleatoriamente, proceso para el modo un jugador.
@@ -31,17 +89,11 @@ def ronda_intentos(max_intentos:int, objetivo:int=None, limite_max_rango:int=100
         número_del_jugador = 0
 
         # El jugardor introduce un número valido
-        while número_del_jugador not in range(1, limite_max_rango+1):
+        while número_del_jugador not in range(1, limite_max_rango + 1):
             print("Introduce un número: ")
-            try:
-                número_del_jugador = int(input())
-            except ValueError:
-                print(f"Por favor, sólo números ENTEROS válidos entre el 1 y {limite_max_rango}.\n")
-            else:
-                if número_del_jugador not in range(1, limite_max_rango+1):
-                    print(f"Por favor, introduce un número válido entre 1 y {limite_max_rango}.\n")
+            número_del_jugador = utilidades.validar_selección(input(), opción_max=limite_max_rango)
 
-        # Comprobamos el resultado
+        # Validado el número, comprobamos el resultado
         else:
             if número_del_jugador < objetivo:
                 print("El número secreto es mayor.\n")
@@ -61,60 +113,6 @@ def ronda_intentos(max_intentos:int, objetivo:int=None, limite_max_rango:int=100
     
     else:
         print("Que pena, te has quedado sin intentos.")
-        print(f"Has ganado 0 puntos.")
-        print(f"has perdido. el número era {objetivo}")
+        print(f"Has ganado 0 puntos. El número era {objetivo}")
         print("=============================================\n")
         return ("Perdedor", intentos_usados, 0)
-
-def solitario(max_intentos:int, limite_max_rango:int=1000):
-    '''Juego en modo solitario. Es necesario definir el número de intentos y el máximo del rango del
-    número objetivo. Valor por defecto 1000.
-    La función devuelve una tupla con:
-    - resultado: "Ganador" si el jugador adivina el número o Perdedor si se le acaban los intentos.
-    - intentos_usados: número de intentos consumidos por el usuario.
-    '''
-    print()
-    print("=============================================")
-    print("Has elegido jugar en modo solitario.")
-    print("Te enfrentaras a la maquina que está eligiendo")
-    print(f"un número en estos momentos entre el 1 y el {limite_max_rango}\n")
-    
-    return ronda_intentos(
-        max_intentos=max_intentos,
-        limite_max_rango=limite_max_rango
-        )
-
-
-def dos_jugadores(max_intentos:str, limite_max_rango:int=1000):
-    '''Juego en modo 2 jugadores. Se requerirá al jugador 1 elegir un numero dentro
-      de un rango entre 1 y un maximo variable, por defecto 1000. A continuación el
-      jugador 2 deberá intentar adivinarlo.
-      Es necesario definir el número de intentos.
-      La función devuelve una tupla con:
-      - resultado: "Ganador" si el jugador 2 adivina el número o Perdedor si se le acaban los intentos.
-      - intentos_usados: número de intentos consumidos por el usuario.
-      '''
-    
-    # Inicialización del juego
-    print()
-    print("=============================================")
-    print("Has elegido el modo 2 jugadores.")
-    print(f"El jugador 1 deberá elegir un numero entre el 1 y el {limite_max_rango}.")
-    print(f"El jugador 2 tiene {max_intentos} intentos para adivinar el número.")
-
-    # Jugador 1 elige el número objetivo
-    objetivo = 0
-    while objetivo not in range(1, limite_max_rango+1):
-        try:
-            objetivo = int(getpass.getpass(f"Jugador 1, por favor introduce un número entre 1 y {limite_max_rango}\n (Tu número está oculto, despues de escribirlo presiona enter): "))
-        except ValueError:
-            print("Por favor, introduce un número válido.\n")
-        else:
-            if objetivo not in range(1, limite_max_rango+1):
-                print(f"El número debe estár entre 1 y {limite_max_rango}.\n")
-    
-    return ronda_intentos(
-        max_intentos=max_intentos,
-        objetivo=objetivo,
-        limite_max_rango=limite_max_rango
-        )

@@ -1,5 +1,7 @@
 from .dificultad import probabilidades
 
+__all__ = ["calculo_puntos"]
+
 def calculo_puntos(intentos_usados:int, max_rango:int) -> int:
     '''Calcula los puntos obtenidos en una partida en función de probabilidad de fracaso al inicio del juego  
     y en el intento acertado multiplicado por 100'''

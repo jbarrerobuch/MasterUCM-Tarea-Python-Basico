@@ -1,28 +1,33 @@
 import pandas as pd
+import matplotlib.pyplot as plt
+from . import utilidades
+__all__ = ["estadisticas"]
 
 def estadisticas ():
     '''Lee y analiza el archivo de estadisticas y las imprime en la consola'''
 
-    print(f"Has seleccionado el análisis de estadísticas")
+    print(f"Has seleccionado análisis de estadísticas")
 
     # Verifica si el archivo existe
     try:
         datos = pd.read_excel("estadisticas.xlsx")
     except FileNotFoundError:
-
         print("No existe o no se puede leer el achivo de estadisticas.\n")
         return
-        
-    # Preparar los datos para los diferentes analisis
+
+
+    # transofrmación de datos para los diferentes analisis
     datos["Ganados"] = datos["Resultado"].apply(lambda x: 1 if x == "Ganador" else 0)
     datos["Perdidos"] = datos["Resultado"].apply(lambda x: 1 if x == "Perdedor" else 0)
     datos["Jugados"] = 1
     datos["Porcentaje intentos"] = datos["Intentos Usados"] / datos["Max Intentos"] * 100
 
+
     # Definir la dificultad como categoría ordenada
     orden_dificultad = ["Personalizado", "Difícil", "Normal", "Fácil"]
     datos["Dificultad"] = pd.Categorical(datos["Dificultad"], categories=orden_dificultad, ordered=True)
-    
+
+
     # Eliminar columns innecesarias
     datos = datos.drop(columns=["Timestamp", "Resultado", "Modo de Juego", "Max Intentos", "Max Rango"])
 
@@ -34,14 +39,10 @@ def estadisticas ():
             print("1. Estadísticas generales por Jugador")
             print("2. Estadísticas por dificultad")
             print("3. Salir")
-            try:
-                selección = int(input())
-            except ValueError:
-                print("Por favor, introduce un número válido.\n")
-            else:
-                if selección not in range(1, 4):
-                    print("Las opciones son del 1 al 3.\n")
-        
+            
+            # Seleccion y validación de la opción
+            selección = utilidades.validar_selección(input(), opción_max=3, opción_min=1)
+            
 
         if selección == 3: # Salir
             print()
@@ -66,17 +67,31 @@ def estadisticas ():
                     }
                 )
                 
-                # Renombrado de columnas y reordenamiento
+                # Renombrado de columnas y reordenamiento de columnas y filas
                 datos_transformados["Promedio intentos"] = datos_transformados["Intentos Usados"]
                 datos_transformados = datos_transformados.drop(columns=["Intentos Usados"])
-                datos_transformados =datos_transformados.reindex(columns=["Jugados", "Ganados", "Perdidos", "Puntos", "Promedio intentos", "Porcentaje Ganados", "Porcentaje Perdidos", "Porcentaje intentos"])
+                datos_transformados = datos_transformados.reindex(
+                    columns=[
+                        "Jugados",
+                        "Ganados",
+                        "Perdidos",
+                        "Puntos",
+                        "Promedio intentos",
+                        "Porcentaje Ganados",
+                        "Porcentaje Perdidos",
+                        "Porcentaje intentos"
+                    ]
+                )
+
                 datos_transformados = datos_transformados.sort_values(by=["Dificultad","Puntos"], ascending=False)
                 
+
                 # Calculo de otros datos porcentuales
-                datos_transformados["Porcentaje Ganados"] = round(datos_transformados["Ganados"] / datos_transformados["Jugados"] * 100,1)
-                datos_transformados["Porcentaje Perdidos"] = round(datos_transformados["Perdidos"] / datos_transformados["Jugados"] * 100,1)
+                datos_transformados["Porcentaje Ganados"] = round(datos_transformados["Ganados"] / datos_transformados["Jugados"] * 100, 1)
+                datos_transformados["Porcentaje Perdidos"] = round(datos_transformados["Perdidos"] / datos_transformados["Jugados"] * 100, 1)
                 datos_transformados = datos_transformados.fillna(0)
                 
+
                 # Imprimir los datos
                 print()
                 print("========Datos nominales agregados por jugador========")
@@ -85,6 +100,46 @@ def estadisticas ():
                 print("========Datos porcentuales agregados por jugador========")
                 print(datos_transformados[["Porcentaje Ganados", "Porcentaje Perdidos", "Porcentaje intentos"]])
                 print()
+                
+                # Transformación de datos para generar los graficos
+                datos_transformados = datos_transformados.reset_index(level="Nombre") # des-indexar para poder graficar
+                niveles_dificultad = datos_transformados.index.get_level_values("Dificultad").unique() # Extraer los valores unicos de los niveles de dificutlad
+                
+                # Graficar los datos nominales
+                fig_nominal, axs_nominal = plt.subplots(2, 2, figsize=(10, 10)) # Crear figura y subplots
+                fig_nominal.suptitle('Estadísticas por jugador y dificultad', fontsize=16) # Definir titulo de la figura
+                
+                # Creación de los graficos por cada nivel de difultad
+                for ax, dificultad in zip(axs_nominal.flatten(), niveles_dificultad):
+                    datos_filtrados = datos_transformados.loc[datos_transformados.index.get_level_values("Dificultad") == dificultad]
+                    datos_filtrados.plot(
+                        kind="bar",
+                        x="Nombre",
+                        y=["Jugados", "Ganados", "Perdidos"],
+                        rot=45,
+                        ax=ax,
+                        title=f"{dificultad}"
+                    )
+                plt.tight_layout()
+                plt.show()
+
+                # Graficar los datos porcentuales
+                fig_porcentual, axs_porcentual = plt.subplots(2, 2, figsize=(10, 10)) # Crear figura y subplots
+                fig_porcentual.suptitle('Estadísticas porcentuales por jugador y dificultad', fontsize=16) # Definir titulo de la figura
+                
+                for ax, dificultad in zip(axs_porcentual.flatten(), niveles_dificultad):
+                    datos_filtrados = datos_transformados.loc[datos_transformados.index.get_level_values("Dificultad") == dificultad]
+                    datos_filtrados.plot(
+                        kind="bar",
+                        x="Nombre",
+                        y=["Porcentaje Ganados", "Porcentaje Perdidos", "Porcentaje intentos"],
+                        rot=45,
+                        ax=ax,
+                        title=f"{dificultad}"
+                    )
+                
+                plt.tight_layout()
+                plt.show()
 
             elif selección == 2: # Estadísticas por dificultad
 

@@ -1,4 +1,5 @@
 from random import randint
+from . import utilidades
 
 __all__ = ["probabilidades", "calculo_rango", "seleccionar_dificultad"]
 
@@ -24,9 +25,10 @@ def calculo_rango(probabilidad:float, num_intentos:int) -> int:
 
 
 def seleccionar_dificultad():
-    '''Selecciona la dificultad del juego y devuelve el número de intentos  
-    y el rango maximo de numeros de acuerdo a la dificultad seleccionada.'''
-    dificultad_int = 0
+    '''Seleccion de la dificultad del juego. Devuelve el número de intentos  
+    y el rango maximo de números de acuerdo a la dificultad seleccionada.'''
+
+    selección_dificultad = 0
     niveles = {
         1: [0.5, 0.05, "Fácil"],
         2: [0.05, 0.0002, "Normal"],
@@ -34,26 +36,21 @@ def seleccionar_dificultad():
         4: [0, 0, "Personalizado"]
     }
 
-    while dificultad_int not in niveles.keys():
+    while selección_dificultad not in niveles.keys():
+
         print("El número de intentos se selecciona aleatoriamente entre 1 y 20.")
         print("El rango de números enteros se calcula en base a la dificultad seleccionada.\n")
+        print("i deseas elegir ambos parametros de juego, selecciona la opción de juego personalizado 4.\n")
         print("Selecciona la dificultad:")
         print("1. Fácil")
         print("2. Normal")
         print("3. Difícil")
-        print("4. Personalizado - tú decides número de intentos y el rango\n")
+        print("4. Personalizado")
         print("Segun la dificultad y el numero de aciertos usados se calularan los puntos para el ranking\n")
-
         print("Introduce el nivel de dificultad: ")
-        try:
-            dificultad_int = int(input())
-        except ValueError:
-            print("\nPor favor, introduce un número válido.\n")
-        else:
-            if dificultad_int not in niveles.keys():
-                print(f"\nLas opciones son del 1 al {len(niveles)}.\n")
-    
-    if dificultad_int == 4:
+        selección_dificultad = utilidades.validar_selección(input(), opción_max=4)
+        
+    if selección_dificultad == 4:
         max_intentos = None
         limite_max_rango = None
         dificultad = "Personalizado"
@@ -63,22 +60,23 @@ def seleccionar_dificultad():
                 max_intentos = int(input("Introduce el número de intentos: "))
                 limite_max_rango = int(input("Introduce el rango máximo de números enteros: "))
             except ValueError:
-                print("Por favor, introduce un número válido.\n")
+                print("Por favor, introduce un número entero válido para intentos y limite maximo.\n")
             else:
                 if max_intentos >= limite_max_rango:
                     print("El número de intentos debe ser menor que el rango de números enteros.\n")
 
     else:
-        max_prob, min_prob, dificultad = niveles[dificultad_int]
+        probabilidad_maxima, probabilidad_minima, dificultad = niveles[selección_dificultad]
 
         max_intentos = randint(1, 20)
-        limite_rango_max_prob = calculo_rango(probabilidad=max_prob, num_intentos=max_intentos)
-        limite_rango_min_prob = calculo_rango(probabilidad=min_prob, num_intentos=max_intentos)
+        limite_rango_bajo = calculo_rango(probabilidad=probabilidad_maxima, num_intentos=max_intentos)
+        limite_rango_alto = calculo_rango(probabilidad=probabilidad_minima, num_intentos=max_intentos)
 
+        # Con rangos muy ajustados de probabilidades, los valores para el limite de rango podrian invertirse.
         try:
-            limite_max_rango = randint(limite_rango_max_prob, limite_rango_min_prob)
+            limite_max_rango = randint(limite_rango_bajo, limite_rango_alto)
         except ValueError:
-            limite_max_rango = randint(limite_rango_min_prob, limite_rango_max_prob)
+            limite_max_rango = randint(limite_rango_alto, limite_rango_bajo)
         
     return max_intentos, limite_max_rango, dificultad
 
