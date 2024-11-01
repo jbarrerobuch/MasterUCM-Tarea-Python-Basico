@@ -7,6 +7,7 @@ import openpyxl
 import datetime as dt
 import time
 
+
 def inicializar_juego(primer_juego=True):
 
     if primer_juego:
@@ -32,14 +33,7 @@ def inicializar_juego(primer_juego=True):
         print("3. Estadística")
         print("4. Salir\n")
         print("¿Qué deseas hacer?: ")
-        selección = input()
-        try:
-            selección = int(selección)
-        except ValueError:
-            print("Por favor, introduce un número válido.\n")
-        else:
-            if selección not in range(1, 5):
-                print("Las opciones son del 1 al 4.\n")
+        selección = validar_selección(input(), opción_max=4)
 
     # Selección del modo solitario
     if selección == 1:
@@ -86,7 +80,7 @@ def inicializar_juego(primer_juego=True):
 
     elif selección == 4:
         print("¡Gracias por jugar!")
-        print("Adios.")
+        print("Adios.\n")
         sys.exit()
 
 def guardar_estadísticas(resultado:str, intentos_usados:int, max_intentos:int, max_rango:int, puntos:int, dificultad:str, modo_juego:str):
@@ -115,29 +109,33 @@ def guardar_estadísticas(resultado:str, intentos_usados:int, max_intentos:int, 
         # si existe, cargamos el archivo.
         try:
             archivo_excel = openpyxl.load_workbook("estadisticas.xlsx")
+        
+        # El archifvo podría estar en uso, esperamos 5 segundos y volvemos a intentar.
+        # En simulación automatizada podría estar cerrandose el archivo.
         except PermissionError:
             time.sleep(5)
             archivo_excel = openpyxl.load_workbook("estadisticas.xlsx")
 
         # Comprobamos si el archivo contiene una pestaña llamada estadísticas
         if not "estadísticas" in archivo_excel.sheetnames:
-            # Creramos la pestaña estadisticas si no existe y escribimos los nombres de las columnas.
+            # Creramos la pestaña estadisticas y escribimos los nombres de las columnas.
             archivo_excel.create_sheet("estadísticas")
             pestaña = archivo_excel["estadísticas"]
             pestaña.append(columnas)
         else:
             # Si la pestaña existe la seleccionamos.
             pestaña = archivo_excel["estadísticas"]
-        
 
     else:
-        # Si no existe, cargamos el archivos, creamos la pestaña estadísticas y escribimos los nombres de las columnas.
+        # Creamos el archivos y la pestaña estadísticas.
         archivo_excel = openpyxl.Workbook()
         archivo_excel.create_sheet("estadísticas")
 
-        # Seleccionar la pestaña estadísticas
+        # Seleccionamos la pestaña estadísticas.
         pestaña = archivo_excel["estadísticas"]
         archivo_excel.active = pestaña
+
+        # Escribimos los nombres de las columnas.
         pestaña.append(columnas)
 
         # Borrar pestañas innecesarias
@@ -155,6 +153,28 @@ def guardar_estadísticas(resultado:str, intentos_usados:int, max_intentos:int, 
         archivo_excel.save("estadisticas.xlsx")
 
     print("Estadísticas guardadas con éxito.\n")
+
+def validar_selección(selección, opción_max:int, opción_min:int=1) -> int:
+    ''' Validación de la entrada de un número entero con caráteres numéricos dentro del rango determinado.
+    Parámetros:
+    - selección (int): número introducido por el usuario.
+    - opción_max (int): número máximo del rango de opciones.
+    - opción_min (int): número mínimo del rango de opciones. Por defecto es 1.
+
+    Retorna:
+    Si la validaición es correcta, retorna el valor seleccionado. Si la validación no es correcta, retorna 0.
+    '''
+    try:
+        selección = int(selección)
+    except ValueError:
+        print("Por favor, introduce un número entero válido.\n")
+        return 0
+    else:
+        if selección not in range(opción_min, opción_max + 1):
+            print(f"Introduce un numero entre {opción_min} y {opción_max}.\n")
+            return 0
+        else:
+            return selección
 
 if __name__ == "__main__":
     datos = {
