@@ -62,7 +62,7 @@ class gemini():
                 "system",
                 f"Estamos jugando a que adivines un numero secreto entre el 1 y el {self.limite_max_rango}.\
                 Tras cada intento de acierto te diré si el número secreto es mayor o menor a tu número.\
-                Es tu primer intento. Responde solo el número que crees que es el secreto en caracteres numericos."
+                Es tu primer intento."
             )
         
         # Mensaje para intentos posteriores
@@ -73,50 +73,57 @@ class gemini():
                 Tras cada intento de acierto te diré si el número secreto es mayor o menor a tu número.
                 Te voy a decir que numeros has usado de momento con el formato 'numero:respuesta'.\n
                 {','.join(self.respuestas)}\n\
-                Responde solo el número que crees que es el secreto en caracteres numericos."""
+                """
             )
 
         human_msg = (
             "human",
-            "¿Cual es el número secreto?"
+            "Responde solo caracterers numéricos ¿Cual es el número secreto?"
         )
 
         mensaje = [system_msg,human_msg]
+        
+        retry = True
 
-        if not self.usage_metadata["timer"] is None:
+        while retry == True:
 
-            # Comprabar uso de la API y esperar si es necesartio
-            if self.usage_metadata["requests_min"] >= 11 and (dt.now() - self.usage_metadata["timer"]).seconds <= 60:
-                pause = 60 - (dt.now() - self.usage_metadata["timer"]).seconds
-                print(f"Se ha excedido el límite de uso de la API, esperando {pause} segundos para reintentar")
-                pprint.pprint(self.usage_metadata)
-                time.sleep(pause)
-                for key in self.usage_metadata.keys():
-                    if key != "timer":
-                        self.usage_metadata[key] = 0
-                    else:
-                        self.usage_metadata[key] = dt.now()
+            if not self.usage_metadata["timer"] is None:
 
-                print("Reiniciando uso de la API")
-                pprint.pprint(self.usage_metadata)
-            elif (dt.now() - self.usage_metadata["timer"]).seconds > 60 and (self.usage_metadata["requests_min"] < 11):
-                print("Reiniciando uso de la API")
-                self.usage_metadata["timer"] = dt.now()
-                self.usage_metadata["requests_min"] = 0
+                # Comprabar uso de la API y esperar si es necesartio
+                if self.usage_metadata["requests_min"] >= 11 and (dt.now() - self.usage_metadata["timer"]).seconds <= 60:
+                    pause = 60 - (dt.now() - self.usage_metadata["timer"]).seconds
+                    print(f"Se ha excedido el límite de uso de la API, esperando {pause} segundos para reintentar")
+                    pprint.pprint(self.usage_metadata)
+                    time.sleep(pause)
+                    for key in self.usage_metadata.keys():
+                        if key != "timer":
+                            self.usage_metadata[key] = 0
+                        else:
+                            self.usage_metadata[key] = dt.now()
 
-        try:
-            respuesta = self.llm.invoke(mensaje)
+                    print("Reiniciando uso de la API")
+                    pprint.pprint(self.usage_metadata)
+                elif (dt.now() - self.usage_metadata["timer"]).seconds > 60 and (self.usage_metadata["requests_min"] < 11):
+                    print("Reiniciando uso de la API")
+                    self.usage_metadata["timer"] = dt.now()
+                    self.usage_metadata["requests_min"] = 0
 
-        except ResourceExhausted:
-            print("Se ha excedido el límite de uso de la API, esperando 1 minuto para reintentar")
-            time.sleep(60)
-            respuesta = self.llm.invoke(mensaje)
-        finally:
-            if self.usage_metadata["timer"] is None or (dt.now() - self.usage_metadata["timer"]).seconds >= 60:
-                self.usage_metadata["timer"] = dt.now()
-                self.usage_metadata["requests_min"] = 0
+            try:
+                respuesta = self.llm.invoke(mensaje)
+                retry = False
+            except ResourceExhausted:
+                print("Se ha excedido el límite de uso de la API, esperando 1 minuto para reintentar")
+                time.sleep(60)
             else:
-                self.usage_metadata["requests_min"] += 1
+                if self.usage_metadata["timer"] is None or (dt.now() - self.usage_metadata["timer"]).seconds >= 60:
+                    self.usage_metadata["timer"] = dt.now()
+                    self.usage_metadata["requests_min"] = 0
+                else:
+                    self.usage_metadata["requests_min"] += 1
+
+        #print("////////////////////////////////////")
+        #print(respuesta)
+        #print("////////////////////////////////////")
 
         # Contabilizar uso de la API
         usage = respuesta.usage_metadata
@@ -127,9 +134,11 @@ class gemini():
         try:
             respuesta = int(respuesta.content.strip())
         except ValueError:
-            respuesta = respuesta.content.split(" ")[-1]
+            respuesta = respuesta.content.strip().split(" ")[-1]
             if respuesta[-1] == ".":
-                respuesta = respuesta[:-1]
+                respuesta = int(respuesta[:-1])
+            else:
+                respuesta = int(respuesta)
 
         return respuesta
 

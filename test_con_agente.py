@@ -137,7 +137,7 @@ class Agente():
 
                     func.stdin.flush()
                     self.total_juegos += 1
-                    time.sleep(0.5)
+                    time.sleep(0.2)
         
         # Salir del bucle
         for i in range(2):
@@ -148,16 +148,16 @@ class Agente():
 
 if __name__ == "__main__":
     configs = {
-        #"Aleatorio": {
-        #    "nombre": "Aleatorio",
-        #    "dificultad": 1,
-        #    "max_juegos": 1000
-        #},
-        #"Mitades": {
-        #    "nombre": "Mitades",
-        #    "dificultad": 1,
-        #    "max_juegos": 479
-        #},
+        "Aleatorio": {
+            "nombre": "Aleatorio",
+            "dificultad": 1,
+            "max_juegos": 1000
+        },
+        "Mitades": {
+            "nombre": "Mitades",
+            "dificultad": 1,
+            "max_juegos": 1000
+        },
         "Gemini": {
             "nombre": "Gemini",
             "modelo": "gemini-1.5-flash",
@@ -165,7 +165,7 @@ if __name__ == "__main__":
             "max_juegos": 1000
         }
     }
-    niveles_dificultad = [2]
+    niveles_dificultad = [1, 2, 3]
 
     for config in configs.values():
         for nivel in niveles_dificultad:
