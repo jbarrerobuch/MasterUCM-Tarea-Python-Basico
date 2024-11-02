@@ -1,87 +1,8 @@
-from .modo import solitario, dos_jugadores
-from .estadistica import estadisticas
-from .dificultad import seleccionar_dificultad
 import os
-import sys
 import openpyxl
 import datetime as dt
 import time
 
-
-def inicializar_juego(primer_juego=True):
-
-    if primer_juego:
-        # Introducción
-        print("Bienvenido al juego: Adivina el número")
-        print("Instrucciones:")
-        print("El juego consiste en adivinar un número ENTERO entre 1 y 1000")
-        print("Después de cada intento, se te dará una pista: si el número a adivinar es mayor o menor a tu intento")
-        print("A continuación, podrás elegir el modo de juego y la dificultad.")
-        print("¡Buena suerte!")
-    else:
-        print()
-        print("¡Bienvenido de nuevo!")
-        print("Quieres intentarlo otra vez?")
-
-    # Inicialización de la selección
-    selección = 0
-
-    while selección not in range(1, 5):
-        print("Selecciona el modo de juego:")
-        print("1. Partida modo solitario")
-        print("2. Partida 2 Jugadores")
-        print("3. Estadística")
-        print("4. Salir\n")
-        print("¿Qué deseas hacer?: ")
-        selección = validar_selección(input(), opción_max=4)
-
-    # Selección del modo solitario
-    if selección == 1:
-
-        print("Has elegido jugar en modo solitario.\n")
-
-        # Seleccionar numero intentos máximos
-        max_intentos, max_rango, dificultad = seleccionar_dificultad()
-
-        # Iniciar el juego en modo solitario
-        resultado, intentos_usados, puntos = solitario(max_intentos=max_intentos, limite_max_rango=max_rango)
-
-        guardar_estadísticas(
-            resultado = resultado,
-            intentos_usados = intentos_usados,
-            max_intentos = max_intentos,
-            max_rango = max_rango,
-            puntos = puntos,
-            dificultad = dificultad,
-            modo_juego = "Solitario"
-        )
-    
-    # Selección del modo 2 jugadores
-    elif selección == 2:
-
-        # Seleccionar numero intentos máximos
-        max_intentos, max_rango, dificultad = seleccionar_dificultad()
-
-        # Iniciar el juego en modo 2 jugadores
-        resultado, intentos_usados, puntos = dos_jugadores(max_intentos=max_intentos, limite_max_rango=max_rango)
-        
-        guardar_estadísticas(
-            resultado = resultado,
-            intentos_usados = intentos_usados,
-            max_intentos = max_intentos,
-            max_rango = max_rango,
-            puntos = puntos,
-            dificultad = dificultad,
-            modo_juego = "Dos jugadores"
-        )
-
-    elif selección == 3:
-        estadisticas()
-
-    elif selección == 4:
-        print("¡Gracias por jugar!")
-        print("Adios.\n")
-        sys.exit()
 
 def guardar_estadísticas(resultado:str, intentos_usados:int, max_intentos:int, max_rango:int, puntos:int, dificultad:str, modo_juego:str):
     '''Guarda las estadisticas de juego en un archivo Excel.
@@ -154,6 +75,7 @@ def guardar_estadísticas(resultado:str, intentos_usados:int, max_intentos:int, 
 
     print("Estadísticas guardadas con éxito.\n")
 
+
 def validar_selección(selección, opción_max:int, opción_min:int=1) -> int:
     ''' Validación de la entrada de un número entero con caráteres numéricos dentro del rango determinado.
     Parámetros:
@@ -175,6 +97,25 @@ def validar_selección(selección, opción_max:int, opción_min:int=1) -> int:
             return 0
         else:
             return selección
+        
+
+def gestión_menu(opciones:dict, msg_intro:str="Selecciona una opción: ", msg_accion:str="¿Que opción eliges?: ") -> int:
+    '''Gestión de un menú de opciones.
+    Parámetros:
+    - opciones (dict): diccionario con las opciones del menú. Las jeys de diccionario debe sen números enteros correspondientes a cada una de las opciones.
+
+    Retorna:
+    La opción seleccionada por el usuario.
+    '''
+    selección = 0
+    while selección not in opciones.keys():
+        print(f"\n{msg_intro}")
+        for key, value in opciones.items():
+            print(f"{key}. {value}")
+        print(f"\n{msg_accion}", end="")
+        selección = validar_selección(input(), opción_max=len(opciones))
+
+    return selección
 
 if __name__ == "__main__":
     datos = {

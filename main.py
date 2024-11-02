@@ -1,7 +1,9 @@
-import funciones.utilidades
+import funciones.juego
 
 # Inicializar el juego
+
 primer_juego = True
+
 while True:
-    funciones.utilidades.inicializar_juego(primer_juego=primer_juego)
+    funciones.juego.iniciar_juego(primer_juego=primer_juego)
     primer_juego = False

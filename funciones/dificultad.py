@@ -20,6 +20,10 @@ def probabilidades(num_intentos:int, max_rango:int) -> float:
 
 
 def calculo_rango(probabilidad:float, num_intentos:int) -> int:
+    '''Calcula el limitime superior del rango de números enteros dada una probailidad y un numero de intentos.
+    Args:
+        - probabilidad (float) : Probabilidad maima de adivinar un número en un rango de números enteros.
+        - num_intentos (int) : Número de intentos.'''
 
     return int(round((1 / probabilidad) + num_intentos,0))
 
@@ -28,7 +32,6 @@ def seleccionar_dificultad():
     '''Seleccion de la dificultad del juego. Devuelve el número de intentos  
     y el rango maximo de números de acuerdo a la dificultad seleccionada.'''
 
-    selección_dificultad = 0
     niveles = {
         1: [0.5, 0.05, "Fácil"],
         2: [0.05, 0.0002, "Normal"],
@@ -36,19 +39,22 @@ def seleccionar_dificultad():
         4: [0, 0, "Personalizado"]
     }
 
-    while selección_dificultad not in niveles.keys():
+    menu_dificultad = {
+        1: "Fácil",
+        2: "Normal",
+        3: "Difícil",
+        4: "Personalizado"
+    }
 
-        print("El número de intentos se selecciona aleatoriamente entre 1 y 20.")
-        print("El rango de números enteros se calcula en base a la dificultad seleccionada.\n")
-        print("i deseas elegir ambos parametros de juego, selecciona la opción de juego personalizado 4.\n")
-        print("Selecciona la dificultad:")
-        print("1. Fácil")
-        print("2. Normal")
-        print("3. Difícil")
-        print("4. Personalizado")
-        print("Segun la dificultad y el numero de aciertos usados se calularan los puntos para el ranking\n")
-        print("Introduce el nivel de dificultad: ")
-        selección_dificultad = utilidades.validar_selección(input(), opción_max=4)
+    print("El número de intentos se selecciona aleatoriamente entre 1 y 20.")
+    print("El rango de números enteros se calcula en base a la dificultad seleccionada.\n")
+    print("Si deseas elegir ambos parametros de juego, selecciona la opción de juego personalizado 4.\n")
+    print("Segun la dificultad y el numero de aciertos usados se calularan los puntos para el ranking\n")
+
+    selección_dificultad = utilidades.gestión_menu(
+        menu_dificultad,
+        msg_intro="Estos son los niveles de dificultad:",
+        msg_accion="¿Qué nivel de dificultad eliges?: ")
         
     if selección_dificultad == 4:
         max_intentos = None
@@ -79,20 +85,3 @@ def seleccionar_dificultad():
             limite_max_rango = randint(limite_rango_alto, limite_rango_bajo)
         
     return max_intentos, limite_max_rango, dificultad
-
-
-if __name__ == "__main__":
-    vals = [
-        (0.6, 5),
-        (0.4, 5),
-        (0.2, 5),
-        (0.1, 5),
-        (0.05, 5)
-    ]
-    print()
-    for i in vals:
-        prob, intentos = i
-        max_rango = calculo_rango(probabilidad=prob, num_intentos=intentos)
-        probabilidad = probabilidades(num_intentos=intentos, max_rango=max_rango)
-        print(f"{i} - {max_rango} - {probabilidad}")
-

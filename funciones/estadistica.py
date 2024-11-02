@@ -32,17 +32,18 @@ def estadisticas ():
     datos = datos.drop(columns=["Timestamp", "Resultado", "Modo de Juego", "Max Intentos", "Max Rango"])
 
     while True:
+
         ### Menu para diferentes estadisticas###
-        selección = 0
-        while selección not in range(1, 4):
-            print("Selecciona el tipo de estadística que deseas ver:")
-            print("1. Estadísticas generales por Jugador")
-            print("2. Estadísticas por dificultad")
-            print("3. Salir")
-            
-            # Seleccion y validación de la opción
-            selección = utilidades.validar_selección(input(), opción_max=3, opción_min=1)
-            
+        menu_estadisticas = {
+            1: "Estadísticas generales por Jugador",
+            2: "Estadísticas por dificultad",
+            3: "Salir"
+        }
+
+        selección = utilidades.gestión_menu(
+            menu_estadisticas,
+            msg_intro="Estadísticas para analizar:"
+        )
 
         if selección == 3: # Salir
             print()
@@ -118,7 +119,8 @@ def estadisticas ():
                         y=["Jugados", "Ganados", "Perdidos"],
                         rot=45,
                         ax=ax,
-                        title=f"{dificultad}"
+                        title=f"{dificultad}",
+                        color=["blue", "green", "red"]
                     )
                 plt.tight_layout()
                 plt.show()
@@ -135,7 +137,8 @@ def estadisticas ():
                         y=["Porcentaje Ganados", "Porcentaje Perdidos", "Porcentaje intentos"],
                         rot=45,
                         ax=ax,
-                        title=f"{dificultad}"
+                        title=f"{dificultad}",
+                        color=["green", "red", "blue"]
                     )
                 
                 plt.tight_layout()
