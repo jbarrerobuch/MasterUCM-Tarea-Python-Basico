@@ -21,14 +21,14 @@ def iniciar_juego(primer_juego=True):
 
 
     # Menú de principal
-    menu_principaL = {
+    menu_principal = {
         1: "Partida modo solitario",
         2: "Partida 2 Jugadores",
         3: "Estadística",
         4: "Salir"
     }
 
-    selección = gestión_menu(menu_principaL)
+    selección = gestión_menu(menu_principal, msg_accion="¿Qué deseas hacer?: ")
 
     # Selección del modo solitario
     if selección == 1:

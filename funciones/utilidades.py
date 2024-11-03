@@ -112,7 +112,7 @@ def gestión_menu(opciones:dict, msg_intro:str="Selecciona una opción: ", msg_a
         print(f"\n{msg_intro}")
         for key, value in opciones.items():
             print(f"{key}. {value}")
-        print(f"\n{msg_accion}", end="")
+        print(f"{msg_accion}\n")
         selección = validar_selección(input(), opción_max=len(opciones))
 
     return selección

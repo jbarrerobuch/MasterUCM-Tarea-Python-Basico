@@ -14,6 +14,7 @@ class Agente():
         self.ultimo_numero = 0 # Último número seleccionado
         self.registro_intentos = []
         self.algoritmo = None
+        self.limite_max_rango = None
 
         # Comprobación de la dificultad
         assert dificultad in range(1, 4), "La dificultad debe ser un número entre 1 y 3."
@@ -45,6 +46,16 @@ class Agente():
             if output == '' and func.poll() is not None:
                 break
 
+            # Iniciar algoritmo
+            if self.limite_max_rango and self.algoritmo is None:
+                if self.nombre == "Mitades":
+                    self.algoritmo = algoritmos.mitades(limite_max_rango=self.limite_max_rango)
+                elif self.nombre == "Gemini":
+                    if self.modelo is None:
+                        self.algoritmo = algoritmos.gemini(limite_max_rango=self.limite_max_rango)
+                    else:
+                        self.algoritmo = algoritmos.gemini(model=self.modelo, limite_max_rango=self.limite_max_rango)
+
             if output:
 
                 # Impresión de la salida del subproceso
@@ -66,29 +77,17 @@ class Agente():
                     func.stdin.flush()
                 
                 # Selección de dificultad
-                elif output == "Introduce el nivel de dificultad: \n":
+                elif output == "¿Qué nivel de dificultad eliges?: \n":
 
                     print(f"[Main] {self.dificultad}")
                     func.stdin.write(f"{self.dificultad}\n")
                     func.stdin.flush()
                 
                 # Captura del limite maximo del rango
-                elif output.startswith("un número en estos momentos entre el 1 y el"):
+                elif output.startswith("un número, en estos momentos, entre el 1 y el"):
                     
                     # Extracción de numero del mensage de salida.
                     self.limite_max_rango = int(output.strip().split(" ")[-1])
-                    
-                    # Inicialización de los algoritmos
-                    if self.nombre == "Mitades":
-                        self.algoritmo = algoritmos.mitades(limite_max_rango=self.limite_max_rango)
-                    
-                    elif self.nombre == "Gemini":
-
-                        # Si no se define modelo, uso del modelo por defecto
-                        if self.modelo is None:
-                            self.algoritmo = algoritmos.gemini(limite_max_rango=self.limite_max_rango)
-                        else:
-                            self.algoritmo = algoritmos.gemini(model=self.modelo, limite_max_rango=self.limite_max_rango)
                 
                 # Intento de acierto
                 elif output == "Introduce un número: \n":
@@ -147,26 +146,31 @@ class Agente():
                     
 
 if __name__ == "__main__":
+
+    # Configuración de los 3 agentes de juego automatico disponibles.
     configs = {
         "Aleatorio": {
             "nombre": "Aleatorio",
             "dificultad": 1,
-            "max_juegos": 1000
+            "max_juegos": 5
         },
         "Mitades": {
             "nombre": "Mitades",
             "dificultad": 1,
-            "max_juegos": 1000
+            "max_juegos": 5
         },
         "Gemini": {
             "nombre": "Gemini",
             "modelo": "gemini-1.5-flash",
             "dificultad":  1,
-            "max_juegos": 1000
+            "max_juegos": 5
         }
     }
+
+    # Niveles de dificultad para la simulación automatica
     niveles_dificultad = [1, 2, 3]
 
+    # Ejacucion de la simulación para cada configuración y nivel de dificultad predefinidos.
     for config in configs.values():
         for nivel in niveles_dificultad:
             agente = Agente(

@@ -5,6 +5,7 @@ from datetime import datetime as dt
 import yaml
 import pprint
 import os
+import sys
 
 class mitades():
     def __init__(self, limite_max_rango:int) -> None:
@@ -24,7 +25,8 @@ class mitades():
 class gemini():
     def __init__(self,
                  model:str="gemini-1.5-flash",
-                 limite_max_rango = 0
+                 limite_max_rango = 0,
+                 now = dt.now()
                  ) -> None:
         
         self.model = model
@@ -34,8 +36,8 @@ class gemini():
             "input_tokens": 0,
             "output_tokens": 0,
             "total_tokens": 0,
-            "requests_min": 0,
-            "timer": None
+            "requests": 0,
+            "timer": now
         }
 
         # Cargar API key a variable de entorno
@@ -48,6 +50,14 @@ class gemini():
             temperature=0,
             verbose=True
             )
+    
+    def limit_minute_quota(self):
+        minute_limit = 12
+        requests_per_minute = self.usage_metadata["requests"] / ((dt.now() - self.usage_metadata["timer"]).seconds/60)
+        if requests_per_minute >= minute_limit:
+            return True
+        else:
+            return False
             
     def agregar_respuesta(self, respuesta:tuple):
         numero, pista = respuesta
@@ -87,43 +97,26 @@ class gemini():
 
         while retry == True:
 
-            if not self.usage_metadata["timer"] is None:
-
-                # Comprabar uso de la API y esperar si es necesartio
-                if self.usage_metadata["requests_min"] >= 11 and (dt.now() - self.usage_metadata["timer"]).seconds <= 60:
-                    pause = 60 - (dt.now() - self.usage_metadata["timer"]).seconds
-                    print(f"Se ha excedido el límite de uso de la API, esperando {pause} segundos para reintentar")
+            if self.limit_minute_quota():
+                    print(f"Se ha excedido el límite de quota por minuto de la API, esperando 10 segundos para reintentar")
                     pprint.pprint(self.usage_metadata)
-                    time.sleep(pause)
-                    for key in self.usage_metadata.keys():
-                        if key != "timer":
-                            self.usage_metadata[key] = 0
-                        else:
-                            self.usage_metadata[key] = dt.now()
-
-                    print("Reiniciando uso de la API")
-                    pprint.pprint(self.usage_metadata)
-                elif (dt.now() - self.usage_metadata["timer"]).seconds > 60 and (self.usage_metadata["requests_min"] < 11):
-                    print("Reiniciando uso de la API")
-                    self.usage_metadata["timer"] = dt.now()
-                    self.usage_metadata["requests_min"] = 0
-
-            try:
-                respuesta = self.llm.invoke(mensaje)
-                retry = False
-            except ResourceExhausted:
-                print("Se ha excedido el límite de uso de la API, esperando 1 minuto para reintentar")
-                time.sleep(60)
+                    time.sleep(10)
+            elif self.usage_metadata["requests"] >= 1500 and (dt.now() - self.usage_metadata["time"]).seconds / 3600 <= 24:
+                print(f"Se ha excedido el límite de quota diario de la API, finalizando el proceso")
+                pprint.pprint(self.usage_metadata)
+                sys.exit()
             else:
-                if self.usage_metadata["timer"] is None or (dt.now() - self.usage_metadata["timer"]).seconds >= 60:
-                    self.usage_metadata["timer"] = dt.now()
-                    self.usage_metadata["requests_min"] = 0
-                else:
-                    self.usage_metadata["requests_min"] += 1
 
-        #print("////////////////////////////////////")
-        #print(respuesta)
-        #print("////////////////////////////////////")
+                try:
+                    respuesta = self.llm.invoke(mensaje)
+
+                except ResourceExhausted:
+                    print("Se ha excedido el límite de uso de la API, esperando 15 segundos para reintentar")
+                    time.sleep(15)
+
+                else:
+                    retry = False
+                    self.usage_metadata["requests"] += 1
 
         # Contabilizar uso de la API
         usage = respuesta.usage_metadata
